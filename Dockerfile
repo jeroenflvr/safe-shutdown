@@ -7,13 +7,10 @@ RUN apt-get update && \
 ARG REPO_URL=https://github.com/jeroenflvr/safe-shutdown.git
 ARG BRANCH=main
 
-# Clone the specified branch of the repository into /usr/src/app
 RUN git clone --branch $BRANCH $REPO_URL /usr/src/app
 
-# Set the working directory
 WORKDIR /usr/src/app
 
-# Build the project in release mode
 RUN cargo build --release
 # 
 # === Stage 2: Create the runtime image ===
@@ -37,3 +34,14 @@ EXPOSE 8999
 # COPY --from=builder /usr/src/app/target/release/my_binary /my_binary
 # ENTRYPOINT ["/my_binary"]
 # EXPOSE 8080
+=======
+#
+# === Stage 2 ===
+FROM debian:bookworm
+
+RUN apt update && apt install -y tini && apt clean
+COPY --from=builder /usr/src/app/target/release/safe-shutdown /usr/local/bin/safe-shutdown
+
+ENTRYPOINT ["/usr/bin/tini"]
+
+EXPOSE 8999
