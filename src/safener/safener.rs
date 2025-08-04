@@ -4,6 +4,7 @@ use std::{fs, io};
 
 const SENTINEL_FILE: &str = ".safe_shutdown";
 
+#[derive(Debug)]
 pub struct Safener {
     pub path: String,
     pub sentinel_file: String,
@@ -48,8 +49,11 @@ impl Safener {
             path,
             sentinel_file,
         };
-
-        s.create_sentinel_file().unwrap();
+        
+        // to set "unsafe by default", create the file
+        // s.create_sentinel_file().unwrap();
+        let r = s.set_safe();
+        println!("{:?}", r);
         s
     }
 
